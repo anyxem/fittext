@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Fit text demo page</title>
+    <style>
+        .fittext {
+            background-color: #c1c1c1;
+            margin: 10px;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="fittext" style="width: 290px;">Text header</div>
+    <div class="fittext" style="width: 220px;">Text with onelongwordverylong</div>
+    <div class="fittext" style="width: 300px;">Text with onelongwordverylong</div>
+
+
+    <script src="fitText.js"></script>
+    <script>
+        fitText('.fittext');
+    </script>
+
+</body>
+</html>
