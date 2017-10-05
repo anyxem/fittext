@@ -15,3 +15,4 @@ http://anyxem.com/fittext/
 ## Todo:
 * support options
 * support ems, rems and %
+* es5 build
