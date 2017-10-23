@@ -5,6 +5,22 @@ This library used for fit text in fixed-width block by changing font size
 
 Usage
 
+Declarative
+```
+<div class="..." data-fittext="true">Title</div>
+```
+
+Specify min and max font size
+```
+<div class="..." data-fittext="true" data-fittext-size-min="12" data-fittext-size-max="60">Title</div>
+```
+
+For dinamic-width blocks need to recalculate font-size on window resize
+```
+<div class="..." data-fittext="true" data-fittext-live="true">Title</div>
+```
+
+with JS
 ```
 fitText('.some-class'); // or #id
 ```
@@ -13,6 +29,7 @@ fitText('.some-class'); // or #id
 http://anyxem.com/fittext/
 
 ## Todo:
-* support options
+* enhanced support options
 * support ems, rems and %
 * es5 build
+* documentation
