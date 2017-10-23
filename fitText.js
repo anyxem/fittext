@@ -50,7 +50,7 @@ function fitText( arg ) {
             itemOptions = options;
         }
 
-        if(item.dataset.fittextLive == 'true'){console.log(item);
+        if(item.dataset.fittextLive == 'true'){
             item.dataset.fittext = "fittext-"+index;
             window.addEventListener('resize',debounce(function(){
                 fitText('[data-fittext="fittext-'+index+'"]')
