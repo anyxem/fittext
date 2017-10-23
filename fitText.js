@@ -9,9 +9,11 @@ function fitText( arg ) {
         }
     };
 
-    if( typeof arg === 'string' ){
+    if ( typeof arg === 'undefined' ){
+        options = Object.assign({},defaults,{ selector: '[data-fittext]' });
+    } else if ( typeof arg === 'string' ){
         options = Object.assign({},defaults,{ selector: arg });
-    }else{
+    } else {
         options = Object.assign({},defaults,arg);
     }
 
@@ -33,12 +35,33 @@ function fitText( arg ) {
 
     var elements = document.querySelectorAll(options.selector);
 
-    elements.forEach( (item)=>{
+    elements.forEach( (item, index)=>{
+        var itemOptions
+
+        if(item.dataset.fittext){
+            itemOptions = Object.assign({},options, 
+                {
+                    sizes: {
+                        min: item.dataset.fittextSizeMin,
+                        max: item.dataset.fittextSizeMax
+                }
+            });
+        } else{
+            itemOptions = options;
+        }
+
+        if(item.dataset.fittextLive == 'true'){console.log(item);
+            item.dataset.fittext = "fittext-"+index;
+            window.addEventListener('resize',debounce(function(){
+                fitText('[data-fittext="fittext-'+index+'"]')
+            }, 500));
+        }
+
         var originalWordBreak = item.style.wordBreak;
-        item.style.fontSize = options.sizes.max + "px";
+        item.style.fontSize = itemOptions.sizes.max + "px";
         item.style.wordBreak = 'break-all';
 
-        if( options.wrap ){
+        if( itemOptions.wrap ){
             var longest = 0;
             var longestIndex = 0;
 
@@ -51,7 +74,7 @@ function fitText( arg ) {
                 return "<div>"+word+"</div>";
             }).join(' ');
 
-            var controlWord = item.querySelectorAll('div')[longestIndex]; console.log(controlWord);
+            var controlWord = item.querySelectorAll('div')[longestIndex];
 
             reduceFont( controlWord, item, function(){ 
                 item.innerHTML = item.textContent || item.innerText;
@@ -62,3 +85,22 @@ function fitText( arg ) {
         }
     } );
 }
+
+fitText();
+
+// helpers
+
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
