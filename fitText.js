@@ -1,36 +1,25 @@
 function fitText( arg ) {
 
     var defaults = {
-        selector: null, 
-        wrap: true, 
+        selector: '[data-fittext]',
+        wrap: true,
         sizes: {
-            min: 10, 
+            min: 10,
             max: 40
         }
     };
+    var options;
 
     if ( typeof arg === 'undefined' ){
-        options = Object.assign({},defaults,{ selector: '[data-fittext]' });
+        options = defaults;
     } else if ( typeof arg === 'string' ){
-        options = Object.assign({},defaults,{ selector: arg });
+        options = {...defaults, selector: arg};
     } else {
-        options = Object.assign({},defaults,arg);
+        options = {...defaults, arg}
     }
 
     if( options.selector === null ){
         return;
-    }
-
-    var reduceFont = function(control, element, cb) {
-        if( 
-            parseInt(element.style.fontSize) > options.sizes.min && 
-            control.getBoundingClientRect().height > 2*parseInt(element.style.fontSize) 
-        ){
-            element.style.fontSize = parseInt(element.style.fontSize)-1+'px';
-            reduceFont(control, element, cb);
-        }else{
-            cb();
-        }
     }
 
     var elements = document.querySelectorAll(options.selector);
@@ -39,22 +28,22 @@ function fitText( arg ) {
         var itemOptions
 
         if(item.dataset.fittext){
-            itemOptions = Object.assign({},options, 
-                {
-                    sizes: {
-                        min: item.dataset.fittextSizeMin,
-                        max: item.dataset.fittextSizeMax
-                }
-            });
+          itemOptions = {...options,
+              sizes: {
+                  min: item.dataset.fittextSizeMin,
+                  max: item.dataset.fittextSizeMax
+            }
+          }
         } else{
-            itemOptions = options;
+          itemOptions = options;
         }
 
-        if(item.dataset.fittextLive == 'true'){
+        if(item.dataset.fittextLive == 'true' && !item.dataset.fittextobservable){
             item.dataset.fittext = "fittext-"+index;
+            item.dataset.fittextobservable = true;
             window.addEventListener('resize',debounce(function(){
                 fitText('[data-fittext="fittext-'+index+'"]')
-            }, 500));
+            }, 100));
         }
 
         var originalWordBreak = item.style.wordBreak;
@@ -76,12 +65,12 @@ function fitText( arg ) {
 
             var controlWord = item.querySelectorAll('div')[longestIndex];
 
-            reduceFont( controlWord, item, function(){ 
+            reduceFont( controlWord, item, options, function(){
                 item.innerHTML = item.textContent || item.innerText;
                 item.style.wordBreak = originalWordBreak;
             });
         } else {
-            reduceFont( item, item, function(){  });
+            reduceFont( item, item, options, function(){  });
         }
     } );
 }
@@ -90,17 +79,26 @@ fitText();
 
 // helpers
 
-function debounce(func, wait, immediate) {
-	var timeout;
-	return function() {
-		var context = this, args = arguments;
-		var later = function() {
-			timeout = null;
-			if (!immediate) func.apply(context, args);
-		};
-		var callNow = immediate && !timeout;
-		clearTimeout(timeout);
-		timeout = setTimeout(later, wait);
-		if (callNow) func.apply(context, args);
-	};
-};
+function reduceFont(control, element, options, cb) {
+    var fontSize = parseInt(element.style.fontSize);
+    var decrement = Math.ceil(fontSize/20);
+    if(
+        fontSize > options.sizes.min &&
+        control.getBoundingClientRect().height > 2*fontSize
+    ){
+        element.style.fontSize = fontSize-decrement+'px';
+        reduceFont(control, element, options, cb);
+    }else{
+        cb();
+    }
+}
+
+function debounce(cb, ms) {
+  let timer;
+
+  return function (...args) {
+    clearTimeout(timer);
+
+    timer = setTimeout(cb.bind(this), ms, ...args);
+  };
+}
