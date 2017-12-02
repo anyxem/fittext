@@ -29,6 +29,7 @@ fitText('.some-class'); // or #id
 http://anyxem.com/fittext/
 
 ## Todo:
+* wrap into class
 * enhanced support options
 * support ems, rems and %
 * es5 build
